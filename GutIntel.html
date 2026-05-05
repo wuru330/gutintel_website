@@ -1,0 +1,1702 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>GutIntel · Spatial microbiome intelligence</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<script>
+  window.TWEAKS = /*EDITMODE-BEGIN*/{
+    "theme": "dark",
+    "accent": "clinical-green",
+    "density": "compact"
+  }/*EDITMODE-END*/;
+</script>
+
+<style>
+:root {
+  --bg:       oklch(0.16 0.010 150);
+  --bg-deep:  oklch(0.12 0.008 150);
+  --bg-soft:  oklch(0.19 0.010 150);
+  --panel:    oklch(0.205 0.010 150);
+  --panel-2:  oklch(0.235 0.010 150);
+  --line:     oklch(0.30 0.012 150);
+  --line-soft:oklch(0.25 0.010 150);
+  --fg:       oklch(0.96 0.008 150);
+  --fg-mute:  oklch(0.74 0.008 150);
+  --fg-dim:   oklch(0.55 0.008 150);
+  --accent:   oklch(0.80 0.17 145);
+  --accent-ink: oklch(0.18 0.05 150);
+  --accent-soft: oklch(0.80 0.17 145 / .14);
+  --magenta:  oklch(0.72 0.18 340);
+  --amber:    oklch(0.82 0.14 75);
+  --blue:     oklch(0.78 0.12 240);
+
+  --serif: "Instrument Serif", ui-serif, Georgia, serif;
+  --display: "Source Serif 4", "Source Serif Pro", ui-serif, Georgia, serif;
+  --sans:  "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --mono:  "IBM Plex Mono", ui-monospace, Menlo, monospace;
+
+  --pad: 32px;
+}
+[data-theme="light"] {
+  --bg:       oklch(0.985 0.004 150);
+  --bg-deep:  oklch(0.96 0.006 150);
+  --bg-soft:  oklch(0.975 0.005 150);
+  --panel:    oklch(1 0 0);
+  --panel-2:  oklch(0.97 0.006 150);
+  --line:     oklch(0.86 0.010 150);
+  --line-soft:oklch(0.90 0.008 150);
+  --fg:       oklch(0.20 0.010 150);
+  --fg-mute:  oklch(0.42 0.008 150);
+  --fg-dim:   oklch(0.60 0.008 150);
+  --accent:   oklch(0.52 0.17 145);
+  --accent-ink: oklch(0.99 0 0);
+  --accent-soft: oklch(0.52 0.17 145 / .10);
+}
+[data-accent="cobalt"]  { --accent: oklch(0.66 0.17 255); --accent-soft: oklch(0.66 0.17 255 / .14); --accent-ink: oklch(0.99 0 0); }
+[data-accent="magenta"] { --accent: oklch(0.68 0.20 340); --accent-soft: oklch(0.68 0.20 340 / .14); --accent-ink: oklch(0.99 0 0); }
+[data-accent="amber"]   { --accent: oklch(0.78 0.16 75);  --accent-soft: oklch(0.78 0.16 75 / .14);  --accent-ink: oklch(0.18 0.03 90); }
+
+[data-density="compact"]  { --pad: 22px; }
+[data-density="spacious"] { --pad: 44px; }
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--sans);
+  font-size: 16px; line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "ss01", "cv11";
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { opacity: .8; }
+button { font-family: inherit; cursor: pointer; }
+.mono, code { font-family: var(--mono); }
+
+/* ---------- nav ---------- */
+.nav {
+  position: sticky; top: 0; z-index: 50;
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  background: color-mix(in oklab, var(--bg) 78%, transparent);
+  border-bottom: 1px solid var(--line-soft);
+  padding: 14px 32px;
+  display: flex; align-items: center; gap: 24px;
+}
+.logo { display: flex; align-items: center; gap: 10px; font-weight: 600; letter-spacing: -.01em; }
+.logo-mark {
+  width: 26px; height: 26px; border-radius: 50%; position: relative;
+  background:
+    radial-gradient(circle at 32% 32%, var(--accent), transparent 44%),
+    radial-gradient(circle at 72% 72%, var(--magenta), transparent 42%),
+    var(--bg-deep);
+  border: 1px solid var(--line);
+}
+.logo-mark::after {
+  content: ""; position: absolute; inset: 3px; border-radius: 50%;
+  border: 1px dashed color-mix(in oklab, var(--fg) 30%, transparent);
+  animation: spin 36s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.logo span { font-family: var(--sans); }
+.logo em { color: var(--accent); font-style: normal; font-weight: 600; }
+
+.nav-links { display: flex; gap: 22px; color: var(--fg-mute); font-size: 14px; margin-left: 28px; }
+.nav-links a { color: inherit; }
+.nav-links a:hover { color: var(--fg); opacity: 1; }
+.nav-right { margin-left: auto; display: flex; gap: 10px; align-items: center; }
+.btn {
+  background: transparent; border: 1px solid var(--line);
+  color: var(--fg); padding: 7px 14px; border-radius: 100px;
+  font-size: 13px; font-weight: 500;
+  display: inline-flex; align-items: center; gap: 6px;
+  transition: all .15s;
+}
+.btn:hover { background: var(--panel); border-color: var(--fg-dim); }
+.btn-primary {
+  background: var(--accent); color: var(--accent-ink);
+  border-color: color-mix(in oklab, var(--accent) 60%, black);
+  font-weight: 600;
+}
+.btn-primary:hover { background: color-mix(in oklab, var(--accent) 90%, white); border-color: var(--accent); }
+.btn-ghost { border-color: transparent; color: var(--fg-mute); }
+
+/* ---------- layout ---------- */
+section { padding: 120px var(--pad); max-width: 1400px; margin: 0 auto; position: relative; }
+[data-density="compact"] section { padding: 80px var(--pad); }
+[data-density="spacious"] section { padding: 160px var(--pad); }
+
+.eyebrow {
+  font-family: var(--mono); font-size: 11.5px;
+  text-transform: uppercase; letter-spacing: .16em;
+  color: var(--fg-mute);
+  display: inline-flex; align-items: center; gap: 10px;
+}
+.eyebrow::before {
+  content: ""; width: 20px; height: 1px; background: var(--accent);
+}
+.section-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 48px; gap: 40px; flex-wrap: wrap; }
+.section-head h2 {
+  font-family: var(--serif); font-weight: 400;
+  font-size: clamp(38px, 4.2vw, 60px);
+  line-height: 1.02;
+  margin: 14px 0 0;
+  letter-spacing: -0.015em;
+  max-width: 18ch;
+}
+.section-head h2 em { color: var(--accent); font-style: italic; }
+.section-head .aside { max-width: 32ch; color: var(--fg-mute); font-size: 14.5px; }
+
+/* ============================================ */
+/* HERO                                          */
+/* ============================================ */
+.hero {
+  padding: 80px var(--pad) 60px;
+  max-width: 1400px; margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 56px;
+  align-items: end;
+  min-height: 78vh;
+  position: relative;
+}
+.hero::before {
+  content: "";
+  position: absolute; inset: 0 var(--pad) 0 var(--pad);
+  background:
+    radial-gradient(ellipse 60% 60% at 10% 20%, var(--accent-soft) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 60% at 90% 40%, color-mix(in oklab, var(--magenta) 8%, transparent) 0%, transparent 55%);
+  pointer-events: none;
+  z-index: 0;
+}
+.hero > * { position: relative; z-index: 1; }
+
+.hero-body { padding-bottom: 8px; }
+.hero .tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--mono); font-size: 11.5px; text-transform: uppercase; letter-spacing: .14em;
+  padding: 5px 10px 5px 6px;
+  border: 1px solid var(--line);
+  border-radius: 100px;
+  color: var(--fg-mute);
+  background: color-mix(in oklab, var(--panel) 50%, transparent);
+}
+.hero .tag::before {
+  content: ""; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent); box-shadow: 0 0 10px var(--accent);
+}
+.hero h1 {
+  font-family: var(--serif); font-weight: 400;
+  font-size: clamp(54px, 7vw, 108px);
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  margin: 28px 0 28px;
+  text-wrap: balance;
+}
+.hero h1 em { color: var(--accent); font-style: italic; }
+.hero h1 .strike { text-decoration: line-through; text-decoration-color: color-mix(in oklab, var(--fg-dim) 80%, transparent); text-decoration-thickness: 2px; color: var(--fg-dim); }
+.hero p.lead {
+  font-size: 18px; line-height: 1.55; color: var(--fg-mute);
+  max-width: 44ch;
+  text-wrap: pretty;
+}
+.hero .cta-row { display: flex; gap: 10px; margin-top: 28px; align-items: center; flex-wrap: wrap; }
+.hero .cta-row .note { color: var(--fg-dim); font-family: var(--mono); font-size: 11.5px; margin-left: 8px; }
+
+/* hero spatial viz */
+.hero-viz {
+  aspect-ratio: 1;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--panel);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 40px 80px -40px color-mix(in oklab, var(--accent) 30%, transparent);
+}
+.hero-viz-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line-soft);
+  font-family: var(--mono); font-size: 11px;
+  color: var(--fg-mute); text-transform: uppercase; letter-spacing: .1em;
+}
+.hero-viz-head .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.hero-viz-head .id { margin-left: auto; color: var(--fg-dim); text-transform: none; letter-spacing: 0; }
+.hero-viz-body {
+  position: relative;
+  width: 100%; height: calc(100% - 42px);
+  background:
+    repeating-linear-gradient(0deg, color-mix(in oklab, var(--fg) 3%, transparent) 0 1px, transparent 1px 40px),
+    repeating-linear-gradient(90deg, color-mix(in oklab, var(--fg) 3%, transparent) 0 1px, transparent 1px 40px),
+    radial-gradient(ellipse at 30% 40%, color-mix(in oklab, var(--magenta) 10%, transparent) 0%, transparent 45%),
+    var(--bg-deep);
+}
+.hero-viz-body svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.hero-viz-legend {
+  position: absolute; left: 14px; bottom: 14px;
+  display: grid; gap: 4px;
+  font-family: var(--mono); font-size: 10.5px; color: var(--fg-mute);
+}
+.hero-viz-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.hero-viz-legend i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.hero-viz-scale {
+  position: absolute; right: 14px; bottom: 14px;
+  font-family: var(--mono); font-size: 10.5px; color: var(--fg-mute);
+  display: flex; align-items: center; gap: 6px;
+}
+.hero-viz-scale .bar { width: 40px; height: 1px; background: var(--fg-mute); display: inline-block; }
+
+/* pulse on hero host cells */
+@keyframes pulse { 0%, 100% { opacity: .3; } 50% { opacity: 1; } }
+
+/* hero metrics strip */
+.hero-strip {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  margin-top: 48px;
+}
+.hero-strip .cell {
+  padding: 20px 24px 22px;
+  border-right: 1px solid var(--line-soft);
+  display: flex; flex-direction: column; gap: 2px;
+}
+.hero-strip .cell:last-child { border-right: 0; }
+.hero-strip .v { font-family: var(--serif); font-size: 38px; line-height: 1; letter-spacing: -.01em; }
+.hero-strip .v em { color: var(--accent); font-style: italic; }
+.hero-strip .k { font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: .12em; color: var(--fg-dim); }
+.hero-strip .d { color: var(--fg-mute); font-size: 12.5px; margin-top: 6px; line-height: 1.4; }
+
+/* ============================================ */
+/* PROBLEM / INSIGHT                             */
+/* ============================================ */
+.comparison {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--panel);
+}
+.comparison .col { padding: 40px; border-right: 1px solid var(--line-soft); }
+.comparison .col:last-child { border-right: 0; }
+.comparison .col.b { background: color-mix(in oklab, var(--accent) 4%, var(--panel)); }
+.comparison .lbl { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .14em; color: var(--fg-mute); }
+.comparison .col.b .lbl { color: var(--accent); }
+.comparison h3 {
+  font-family: var(--serif); font-weight: 400; font-size: 30px;
+  margin: 12px 0 16px; letter-spacing: -.005em;
+}
+.comparison p { color: var(--fg-mute); max-width: 40ch; line-height: 1.55; }
+.comparison .viz { margin: 22px 0 0; height: 210px; border: 1px solid var(--line-soft); border-radius: 10px; background: var(--bg-deep); position: relative; overflow: hidden; }
+.comparison .viz.a { background:
+  repeating-linear-gradient(0deg, color-mix(in oklab, var(--fg) 4%, transparent) 0 1px, transparent 1px 20px),
+  repeating-linear-gradient(90deg, color-mix(in oklab, var(--fg) 4%, transparent) 0 1px, transparent 1px 20px),
+  var(--bg-deep); }
+.comparison .viz.b { background:
+  repeating-linear-gradient(0deg, color-mix(in oklab, var(--accent) 5%, transparent) 0 1px, transparent 1px 20px),
+  repeating-linear-gradient(90deg, color-mix(in oklab, var(--accent) 5%, transparent) 0 1px, transparent 1px 20px),
+  color-mix(in oklab, var(--accent) 4%, var(--bg-deep)); }
+.comparison .viz svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+/* stat trio for problem */
+.stat-trio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 48px; }
+.stat-card { padding: 28px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
+.stat-card .k { font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: .14em; color: var(--fg-dim); }
+.stat-card .v { font-family: var(--serif); font-size: 72px; line-height: 1; margin: 10px 0 12px; letter-spacing: -.02em; }
+.stat-card .v .unit { font-size: 30px; color: var(--fg-mute); }
+.stat-card .v em { color: var(--accent); font-style: italic; }
+.stat-card .d { color: var(--fg-mute); font-size: 14px; line-height: 1.5; max-width: 28ch; }
+
+/* ============================================ */
+/* PLATFORM (three layers)                       */
+/* ============================================ */
+.platform-section { background:
+  linear-gradient(180deg, transparent 0%, var(--bg-deep) 8%, var(--bg-deep) 92%, transparent 100%);
+  max-width: none; padding-left: 0; padding-right: 0;
+}
+.platform-section .inner { max-width: 1400px; margin: 0 auto; padding: 0 var(--pad); }
+.layers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.layer {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 32px;
+  background: var(--panel);
+  position: relative;
+  display: flex; flex-direction: column;
+  gap: 0;
+  min-height: 420px;
+  transition: border-color .2s;
+}
+.layer:hover { border-color: color-mix(in oklab, var(--accent) 50%, var(--line)); }
+.layer .idx {
+  font-family: var(--mono); font-size: 11px;
+  color: var(--fg-dim);
+  letter-spacing: .12em;
+}
+.layer h3 {
+  font-family: var(--serif); font-weight: 400;
+  font-size: 32px; line-height: 1.05;
+  margin: 14px 0 4px; letter-spacing: -.005em;
+}
+.layer h3 em { color: var(--accent); font-style: italic; }
+.layer .tag {
+  font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: .12em;
+  color: var(--fg-mute);
+  margin-bottom: 16px;
+}
+.layer p { color: var(--fg-mute); font-size: 14.5px; line-height: 1.55; }
+.layer .layer-art {
+  margin-top: auto;
+  border-top: 1px solid var(--line-soft);
+  padding-top: 18px;
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.chip {
+  font-family: var(--mono); font-size: 11px;
+  padding: 3px 9px; border-radius: 4px;
+  border: 1px solid var(--line);
+  color: var(--fg-mute);
+  background: var(--bg-deep);
+}
+.chip.ac { color: var(--accent); border-color: color-mix(in oklab, var(--accent) 40%, var(--line)); background: var(--accent-soft); }
+
+.platform-callout {
+  margin-top: 48px;
+  padding: 36px 48px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background:
+    radial-gradient(ellipse at 80% 50%, var(--accent-soft) 0%, transparent 50%),
+    var(--panel);
+  display: flex; justify-content: space-between; align-items: center; gap: 28px;
+  flex-wrap: wrap;
+}
+.platform-callout .q {
+  font-family: var(--serif); font-size: 32px; font-weight: 400;
+  line-height: 1.2; letter-spacing: -.005em;
+  max-width: 28ch;
+}
+.platform-callout .q em { color: var(--accent); font-style: italic; }
+.platform-callout .comp {
+  display: grid; gap: 2px;
+  font-family: var(--mono); font-size: 11.5px;
+  color: var(--fg-mute); text-align: right;
+}
+.platform-callout .comp b { color: var(--fg); font-weight: 500; font-size: 13px; }
+
+/* ============================================ */
+/* MARKET                                        */
+/* ============================================ */
+.market-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+.market-viz {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 32px;
+  background: var(--panel);
+  position: relative;
+  aspect-ratio: 1.1;
+}
+.tam-layers { position: absolute; inset: 32px; }
+.tam-circle {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid color-mix(in oklab, var(--accent) 40%, var(--line));
+  display: flex; align-items: flex-start; justify-content: flex-start;
+  padding: 14px 16px;
+  flex-direction: column;
+  background: color-mix(in oklab, var(--accent) 4%, var(--bg-deep));
+}
+.tam-circle .tk { font-family: var(--mono); font-size: 10px; color: var(--fg-dim); text-transform: uppercase; letter-spacing: .1em; }
+.tam-circle .tv { font-family: var(--serif); font-size: 26px; line-height: 1; margin-top: 4px; letter-spacing: -.01em; }
+.tam-circle .td { font-size: 11.5px; color: var(--fg-mute); margin-top: 2px; }
+.tam-tam  { inset: 0; background: color-mix(in oklab, var(--accent) 4%, var(--bg-deep)); }
+.tam-sam  { inset: 18% 18% 18% 18%; background: color-mix(in oklab, var(--accent) 10%, var(--bg-deep)); border-color: color-mix(in oklab, var(--accent) 55%, var(--line)); }
+.tam-som  {
+  inset: 40% 40% 40% 40%;
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+  align-items: center; justify-content: center;
+  padding: 0; text-align: center;
+}
+.tam-som .tk { color: color-mix(in oklab, var(--accent-ink) 70%, transparent); }
+.tam-som .tv { color: var(--accent-ink); }
+
+.market-facts { display: grid; gap: 14px; }
+.market-fact { padding: 22px 24px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); display: grid; grid-template-columns: auto 1fr; gap: 18px; align-items: center; }
+.market-fact .v { font-family: var(--serif); font-size: 48px; line-height: 1; letter-spacing: -.02em; }
+.market-fact .v em { color: var(--accent); font-style: italic; }
+.market-fact .t { font-size: 13.5px; color: var(--fg-mute); line-height: 1.45; }
+.market-fact .t b { color: var(--fg); font-weight: 600; }
+
+/* ============================================ */
+/* COMPETITION                                   */
+/* ============================================ */
+.matrix {
+  position: relative;
+  aspect-ratio: 1.4;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
+  padding: 48px 56px 56px 72px;
+}
+.matrix::before {
+  content: "DATA TYPE →";
+  position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+  font-family: var(--mono); font-size: 10.5px; color: var(--fg-dim); letter-spacing: .14em;
+}
+.matrix::after {
+  content: "DOMAIN FOCUS ↑";
+  position: absolute; left: 18px; top: 50%; transform: translateY(-50%) rotate(-90deg); transform-origin: center;
+  font-family: var(--mono); font-size: 10.5px; color: var(--fg-dim); letter-spacing: .14em;
+  white-space: nowrap;
+}
+.axis {
+  position: absolute; background: var(--line);
+}
+.axis.x { left: 72px; right: 36px; bottom: 36px; height: 1px; }
+.axis.y { left: 72px; top: 36px; bottom: 36px; width: 1px; }
+.ax-tick { position: absolute; font-family: var(--mono); font-size: 10px; color: var(--fg-dim); text-transform: uppercase; letter-spacing: .1em; }
+.quad {
+  position: absolute;
+  border: 1px dashed var(--line-soft);
+  border-radius: 10px;
+  padding: 14px 16px;
+  background: var(--bg-deep);
+  display: grid; gap: 4px;
+  overflow: hidden;
+}
+.quad .qh { font-family: var(--mono); font-size: 10.5px; color: var(--fg-mute); text-transform: uppercase; letter-spacing: .1em; }
+.quad .qc { font-size: 12.5px; line-height: 1.4; color: var(--fg-mute); }
+.quad .qc b { color: var(--fg); font-weight: 600; }
+.quad.us {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border: 1px solid var(--accent);
+  border-style: solid;
+  box-shadow: 0 14px 36px -14px color-mix(in oklab, var(--accent) 70%, transparent);
+}
+.quad.us .qh { color: color-mix(in oklab, var(--accent-ink) 70%, transparent); }
+.quad.us .qc { color: var(--accent-ink); }
+.quad.us .qc b { color: var(--accent-ink); }
+.quad.us .name { font-family: var(--serif); font-size: 26px; line-height: 1; margin-bottom: 4px; letter-spacing: -.01em; }
+
+/* quad positions */
+.q-tl { left: 86px;  top: 52px;  width: calc(50% - 100px); height: calc(50% - 48px); }
+.q-tr { right: 52px; top: 52px;  width: calc(50% - 100px); height: calc(50% - 48px); }
+.q-bl { left: 86px;  bottom: 52px; width: calc(50% - 100px); height: calc(50% - 48px); }
+.q-br { right: 52px; bottom: 52px; width: calc(50% - 100px); height: calc(50% - 48px); }
+
+/* ============================================ */
+/* TRACTION                                      */
+/* ============================================ */
+.traction {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: stretch;
+}
+.iff-card {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background:
+    radial-gradient(ellipse at 120% 0%, color-mix(in oklab, var(--magenta) 14%, transparent) 0%, transparent 50%),
+    var(--panel);
+  padding: 40px;
+  display: flex; flex-direction: column;
+  gap: 20px;
+  position: relative; overflow: hidden;
+}
+.iff-card .brand {
+  font-family: var(--serif); font-size: 120px; line-height: .9;
+  letter-spacing: -.03em;
+  background: linear-gradient(180deg, var(--fg) 0%, color-mix(in oklab, var(--fg) 50%, transparent) 100%);
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent;
+  margin: 0;
+}
+.iff-card .brand-sub {
+  font-family: var(--mono); font-size: 11px;
+  color: var(--fg-dim); text-transform: uppercase; letter-spacing: .14em;
+}
+.iff-card .stat-row {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 0;
+  border-top: 1px solid var(--line);
+  margin-top: auto;
+}
+.iff-card .stat-row .c { padding: 16px 18px 0; border-right: 1px solid var(--line-soft); }
+.iff-card .stat-row .c:last-child { border-right: 0; }
+.iff-card .stat-row .v { font-family: var(--serif); font-size: 32px; line-height: 1; letter-spacing: -.01em; }
+.iff-card .stat-row .v em { color: var(--accent); font-style: italic; }
+.iff-card .stat-row .k { font-size: 12.5px; color: var(--fg-mute); margin-top: 6px; line-height: 1.4; }
+
+.unlocks h3 {
+  font-family: var(--serif); font-weight: 400; font-size: 28px;
+  margin: 0 0 18px; letter-spacing: -.005em;
+}
+.unlocks ol { list-style: none; padding: 0; margin: 0; display: grid; gap: 0; }
+.unlocks li {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 16px;
+  align-items: baseline;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+.unlocks li:last-child { border-bottom: 0; }
+.unlocks li .n {
+  font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: .1em;
+}
+.unlocks li b { font-weight: 600; display: block; margin-bottom: 3px; }
+.unlocks li span { color: var(--fg-mute); font-size: 14px; line-height: 1.5; }
+
+/* ============================================ */
+/* TEAM                                          */
+/* ============================================ */
+.team-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.founder {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
+  padding: 0;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 180px 1fr;
+}
+.founder .portrait {
+  background:
+    repeating-linear-gradient(45deg, color-mix(in oklab, var(--fg) 4%, transparent) 0 2px, transparent 2px 8px),
+    linear-gradient(160deg, color-mix(in oklab, var(--accent) 22%, var(--bg-deep)) 0%, var(--bg-deep) 100%);
+  position: relative;
+  display: grid; place-items: center;
+  border-right: 1px solid var(--line-soft);
+  min-height: 240px;
+}
+.founder .portrait.b {
+  background:
+    repeating-linear-gradient(45deg, color-mix(in oklab, var(--fg) 4%, transparent) 0 2px, transparent 2px 8px),
+    linear-gradient(160deg, color-mix(in oklab, var(--magenta) 22%, var(--bg-deep)) 0%, var(--bg-deep) 100%);
+}
+.founder .portrait .initials {
+  font-family: var(--serif); font-size: 76px; line-height: 1;
+  color: var(--fg); font-style: italic;
+}
+.founder .portrait .cap {
+  position: absolute; bottom: 10px; left: 12px; right: 12px;
+  font-family: var(--mono); font-size: 9.5px; color: var(--fg-mute);
+  text-transform: uppercase; letter-spacing: .1em;
+}
+.founder .body { padding: 24px 26px 26px; display: flex; flex-direction: column; }
+.founder .role { font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: .14em; color: var(--accent); }
+.founder h3 {
+  font-family: var(--serif); font-weight: 400; font-size: 28px;
+  margin: 6px 0 12px; letter-spacing: -.005em;
+}
+.founder .affil { font-size: 13px; color: var(--fg); margin-bottom: 10px; line-height: 1.5; }
+.founder .affil b { font-weight: 600; }
+.founder ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 5px; font-size: 12.5px; color: var(--fg-mute); }
+.founder ul li { display: grid; grid-template-columns: 12px 1fr; gap: 8px; }
+.founder ul li::before { content: "◦"; color: var(--accent); font-size: 14px; line-height: 1.3; }
+
+/* ============================================ */
+/* ROADMAP                                       */
+/* ============================================ */
+.roadmap {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
+  padding: 8px;
+}
+.roadmap-rows { display: grid; gap: 0; }
+.roadmap-row {
+  display: grid;
+  grid-template-columns: 130px 110px 1fr auto;
+  align-items: center;
+  gap: 24px;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.roadmap-row:last-child { border-bottom: 0; }
+.roadmap-row .q { font-family: var(--mono); font-size: 11.5px; color: var(--fg-mute); letter-spacing: .08em; }
+.roadmap-row .phase {
+  font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .12em;
+  padding: 3px 10px; border-radius: 100px;
+  background: var(--panel-2); color: var(--fg-mute); border: 1px solid var(--line);
+  justify-self: start;
+}
+.roadmap-row .phase.active { background: var(--accent-soft); color: var(--accent); border-color: color-mix(in oklab, var(--accent) 40%, transparent); }
+.roadmap-row .phase.next { background: color-mix(in oklab, var(--amber) 16%, transparent); color: var(--amber); border-color: color-mix(in oklab, var(--amber) 36%, transparent); }
+.roadmap-row .t { font-family: var(--serif); font-size: 20px; letter-spacing: -.002em; }
+.roadmap-row .sub { font-size: 13px; color: var(--fg-mute); margin-top: 3px; }
+.roadmap-row .milestone { font-family: var(--mono); font-size: 11px; color: var(--fg-dim); justify-self: end; text-align: right; }
+
+/* ============================================ */
+/* INVESTORS / SPONSORS                          */
+/* ============================================ */
+.sponsor-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.sponsor {
+  padding: 32px 24px;
+  border-right: 1px solid var(--line-soft);
+  display: flex; flex-direction: column; align-items: flex-start; gap: 10px;
+  min-height: 140px;
+  justify-content: space-between;
+}
+.sponsor:last-child { border-right: 0; }
+.sponsor-logo {
+  font-family: var(--serif); font-size: 28px; line-height: 1;
+  letter-spacing: -.01em;
+}
+.sponsor-logo::after { content: ""; display: block; width: 18px; height: 1px; background: var(--accent); margin-top: 8px; }
+.sponsor-tag { font-family: var(--mono); font-size: 10.5px; color: var(--fg-dim); text-transform: uppercase; letter-spacing: .12em; }
+
+/* ============================================ */
+/* LETTERS OF PROFESSIONAL SUPPORT                */
+/* ============================================ */
+.lor-section {
+  padding-top: 100px !important;
+  padding-bottom: 110px !important;
+  position: relative;
+}
+.lor-section::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(ellipse 60% 40% at 50% 0%, var(--accent-soft) 0%, transparent 60%),
+    repeating-linear-gradient(
+      135deg,
+      transparent 0,
+      transparent 22px,
+      color-mix(in oklab, var(--fg) 1.5%, transparent) 22px,
+      color-mix(in oklab, var(--fg) 1.5%, transparent) 23px
+    );
+  pointer-events: none;
+  opacity: .9;
+  z-index: 0;
+}
+.lor-section > * { position: relative; z-index: 1; }
+
+.lor-eyebrow-row {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+.lor-seal {
+  width: 86px; height: 86px;
+  color: var(--accent);
+  opacity: .85;
+  flex-shrink: 0;
+  animation: lor-seal-spin 60s linear infinite;
+}
+@keyframes lor-seal-spin {
+  to { transform: rotate(360deg); }
+}
+.lor-seal svg { width: 100%; height: 100%; display: block; }
+
+.lor-h2 {
+  font-family: var(--display);
+  font-size: 56px; line-height: 1.08;
+  letter-spacing: -0.02em;
+  font-weight: 400;
+  margin: 0 0 22px;
+  max-width: 22ch;
+  color: var(--fg);
+}
+.lor-h2 em {
+  font-style: italic;
+  color: var(--accent);
+  font-weight: 400;
+}
+.lor-lede {
+  font-family: var(--display);
+  color: var(--fg-mute);
+  font-size: 18px;
+  line-height: 1.55;
+  max-width: 78ch;
+  margin: 0 0 56px;
+  font-weight: 400;
+}
+
+/* Card grid */
+.lor-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  position: relative;
+}
+.lor-row::before,
+.lor-row::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  z-index: 2;
+}
+.lor-row::before {
+  top: -1px; left: -1px;
+  width: 24px; height: 24px;
+  border-top: 2px solid var(--accent);
+  border-left: 2px solid var(--accent);
+}
+.lor-row::after {
+  bottom: -1px; right: -1px;
+  width: 24px; height: 24px;
+  border-bottom: 2px solid var(--accent);
+  border-right: 2px solid var(--accent);
+}
+.lor {
+  position: relative;
+  padding: 26px 26px 28px;
+  border-right: 1px solid var(--line-soft);
+  display: flex; flex-direction: column;
+  background: linear-gradient(180deg, color-mix(in oklab, var(--accent) 5%, transparent) 0%, transparent 30%);
+  min-height: 280px;
+}
+.lor:last-child { border-right: 0; }
+.lor::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent) 0%, transparent 100%);
+  opacity: .6;
+}
+
+.lor-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 26px;
+}
+.lor-flag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--mono);
+  padding: 5px 9px 5px 7px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--bg-deep);
+}
+.lor-flag-emoji { font-size: 14px; line-height: 1; }
+.lor-flag-code {
+  font-size: 10.5px;
+  color: var(--fg-mute);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.lor-stamp {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--accent); letter-spacing: .14em;
+  text-transform: uppercase;
+  display: inline-flex; align-items: center; gap: 7px;
+  font-weight: 500;
+}
+.lor-stamp::before {
+  content: ""; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+  animation: lor-pulse 2.4s ease-in-out infinite;
+}
+@keyframes lor-pulse {
+  0%, 100% { box-shadow: 0 0 0 3px var(--accent-soft); }
+  50%      { box-shadow: 0 0 0 5px color-mix(in oklab, var(--accent) 8%, transparent); }
+}
+
+.lor-brand {
+  font-family: var(--display);
+  font-size: 36px; line-height: 1;
+  letter-spacing: -0.02em;
+  font-weight: 500;
+  margin: 0 0 10px;
+  color: var(--fg);
+}
+.lor-tag {
+  font-family: var(--display);
+  font-size: 14.5px;
+  color: var(--fg-mute);
+  line-height: 1.5;
+  margin: 0;
+  font-style: italic;
+  font-weight: 400;
+}
+
+.lor-divider {
+  margin: 22px 0 18px;
+  height: 1px;
+  background: var(--line-soft);
+  position: relative;
+}
+.lor-divider span {
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px; height: 8px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  transform-origin: center;
+}
+.lor-divider span::after {
+  content: "";
+  position: absolute;
+  inset: 1.5px;
+  background: var(--accent);
+  opacity: .4;
+}
+
+.lor-attrib {
+  margin-top: auto;
+}
+.lor-signer {
+  font-family: var(--display);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--fg);
+  margin-bottom: 6px;
+  letter-spacing: -0.005em;
+  line-height: 1.25;
+}
+.lor-title {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--fg-dim);
+  line-height: 1.55;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  font-weight: 400;
+}
+
+.lor-foot {
+  font-family: var(--display);
+  font-size: 13px;
+  font-style: italic;
+  color: var(--fg-dim);
+  line-height: 1.6;
+  margin: 24px 0 0;
+  max-width: 92ch;
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+}
+.lor-foot-mark {
+  font-family: var(--display);
+  color: var(--accent);
+  font-style: normal;
+  font-size: 18px;
+  font-weight: 400;
+  flex-shrink: 0;
+}
+
+@media (max-width: 1100px) {
+  .lor-h2 { font-size: 44px; }
+  .lor-row { grid-template-columns: repeat(2, 1fr); }
+  .lor:nth-child(2) { border-right: 0; }
+  .lor:nth-child(1), .lor:nth-child(2) { border-bottom: 1px solid var(--line-soft); }
+}
+@media (max-width: 640px) {
+  .lor-h2 { font-size: 34px; }
+  .lor-eyebrow-row { flex-direction: column; }
+  .lor-seal { width: 64px; height: 64px; }
+  .lor-row { grid-template-columns: 1fr; }
+  .lor { border-right: 0; border-bottom: 1px solid var(--line-soft); min-height: 0; }
+  .lor:last-child { border-bottom: 0; }
+}
+
+/* ============================================ */
+/* CONTACT / FOOTER                              */
+/* ============================================ */
+.contact {
+  background:
+    radial-gradient(ellipse at 20% 50%, var(--accent-soft) 0%, transparent 55%),
+    var(--bg-deep);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  max-width: none;
+  padding: 100px var(--pad);
+}
+.contact-inner { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+.contact h2 {
+  font-family: var(--serif); font-weight: 400;
+  font-size: clamp(44px, 5vw, 72px);
+  line-height: 1; letter-spacing: -.015em;
+  margin: 0; max-width: 14ch;
+}
+.contact h2 em { color: var(--accent); font-style: italic; }
+.contact-card { padding: 32px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); display: grid; gap: 14px; }
+.contact-card .ky { font-family: var(--mono); font-size: 10.5px; color: var(--fg-dim); text-transform: uppercase; letter-spacing: .14em; }
+.contact-card .em { font-family: var(--mono); font-size: 13.5px; color: var(--fg); word-break: break-all; }
+.contact-card .em a { color: var(--accent); }
+.contact-card .line { border-top: 1px solid var(--line-soft); padding-top: 14px; margin-top: 4px; }
+
+footer.site-foot {
+  padding: 28px var(--pad);
+  max-width: 1400px; margin: 0 auto;
+  display: flex; justify-content: space-between; align-items: center;
+  font-family: var(--mono); font-size: 11.5px; color: var(--fg-dim);
+  gap: 16px; flex-wrap: wrap;
+}
+footer.site-foot .r { display: flex; gap: 18px; }
+
+/* ---------- tweaks panel ---------- */
+.tweaks-panel {
+  position: fixed; bottom: 20px; right: 20px; width: 280px;
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 20px 50px rgba(0,0,0,.4), 0 6px 16px rgba(0,0,0,.25);
+  padding: 16px; z-index: 100; display: none;
+}
+.tweaks-panel.open { display: block; }
+.tweaks-panel h4 {
+  font-family: var(--serif); font-weight: 400; font-size: 18px;
+  margin: 0 0 14px; display: flex; align-items: center; gap: 8px;
+}
+.tweaks-panel h4::before {
+  content: ""; width: 10px; height: 10px; border-radius: 50%;
+  background: var(--accent); box-shadow: 0 0 10px var(--accent);
+}
+.tweak-row { margin-bottom: 14px; }
+.tweak-row label { display: block; font-size: 11px; color: var(--fg-mute); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 6px; font-weight: 600; }
+.seg { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--bg-deep); }
+.seg button { flex: 1; background: none; border: 0; color: var(--fg-mute); padding: 6px 4px; font-size: 11.5px; font-weight: 500; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); }
+.swatches { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.swatch { aspect-ratio: 1; border-radius: 8px; border: 2px solid var(--line); cursor: pointer; position: relative; }
+.swatch:hover { transform: scale(1.05); }
+.swatch[aria-pressed="true"] { border-color: var(--fg); }
+
+/* responsive */
+@media (max-width: 980px) {
+  .hero { grid-template-columns: 1fr; }
+  .hero-viz { max-width: 520px; }
+  .hero-strip { grid-template-columns: repeat(2, 1fr); }
+  .hero-strip .cell:nth-child(2n) { border-right: 0; }
+  .hero-strip .cell { border-bottom: 1px solid var(--line-soft); }
+  .section-head { flex-direction: column; align-items: flex-start; }
+  .comparison { grid-template-columns: 1fr; }
+  .stat-trio, .layers, .team-grid, .traction, .sponsor-row { grid-template-columns: 1fr; }
+  .market-grid { grid-template-columns: 1fr; }
+  .contact-inner { grid-template-columns: 1fr; }
+  .matrix { aspect-ratio: 1; }
+  .q-tl, .q-tr, .q-bl, .q-br { width: auto; }
+  .nav-links { display: none; }
+}
+</style>
+</head>
+<body data-theme="dark" data-accent="clinical-green" data-density="comfortable">
+
+<!-- ================= NAV ================= -->
+<nav class="nav">
+  <a class="logo" href="#top">
+    <span class="logo-mark" aria-hidden="true"></span>
+    <span>Gut<em>Intel</em></span>
+  </a>
+  <div class="nav-links">
+    <a href="#platform">Platform</a>
+    <a href="#market">Market</a>
+    <a href="#traction">Traction</a>
+    <a href="#team">Team</a>
+    <a href="#roadmap">Roadmap</a>
+  </div>
+  <div class="nav-right">
+    <a class="btn btn-ghost" href="#contact">For investors</a>
+    <a class="btn btn-primary" href="#contact">Request data access</a>
+  </div>
+</nav>
+
+<!-- ================= HERO ================= -->
+<header class="hero" id="top" data-screen-label="Hero">
+  <div class="hero-body">
+    <span class="tag">Pre-seed · April 2026 · Confidential</span>
+    <h1>The <em>intelligence</em> layer<br/>for the gut.</h1>
+    <p class="lead">
+      Spatial omics + AI reveals which bacteria physically interact with which host cells — single-cell, single-strain, in-tissue. Data that has never existed before, sold to probiotic and pharma R&amp;D.
+    </p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="#platform">See the platform →</a>
+      <a class="btn" href="#team">Meet the founders</a>
+      <span class="note">AI MICROBIOME INTELLIGENCE · GUT-BRAIN AXIS</span>
+    </div>
+  </div>
+
+  <!-- spatial viz -->
+  <div class="hero-viz" aria-hidden="true">
+    <div class="hero-viz-head">
+      <span class="dot"></span>
+      <span>SLIDE · ILEUM · MOUSE / STEREO-SEQ</span>
+      <span class="id">atlas/v0.3 · id 01847</span>
+    </div>
+    <div class="hero-viz-body">
+      <svg viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice">
+        <!-- tissue organoid outlines -->
+        <g stroke="currentColor" stroke-opacity=".14" fill="none" stroke-width="1">
+          <ellipse cx="140" cy="150" rx="60" ry="42"/>
+          <ellipse cx="280" cy="210" rx="70" ry="48"/>
+          <ellipse cx="180" cy="290" rx="72" ry="40"/>
+        </g>
+        <!-- host cells: big, dim, pulsing -->
+        <g>
+          <circle cx="120" cy="130" r="6"  fill="oklch(0.8 0.12 240)" opacity=".45"/>
+          <circle cx="155" cy="160" r="7"  fill="oklch(0.8 0.12 240)" opacity=".55"/>
+          <circle cx="140" cy="185" r="5.5" fill="oklch(0.8 0.12 240)" opacity=".5"/>
+          <circle cx="275" cy="210" r="8"  fill="oklch(0.8 0.12 240)" opacity=".6"/>
+          <circle cx="310" cy="195" r="6"  fill="oklch(0.8 0.12 240)" opacity=".45"/>
+          <circle cx="245" cy="235" r="6"  fill="oklch(0.8 0.12 240)" opacity=".5"/>
+          <circle cx="170" cy="290" r="7"  fill="oklch(0.8 0.12 240)" opacity=".55"/>
+          <circle cx="210" cy="310" r="5"  fill="oklch(0.8 0.12 240)" opacity=".45"/>
+        </g>
+        <!-- EC cells: magenta, target cells -->
+        <g>
+          <circle cx="160" cy="155" r="8"  fill="oklch(0.72 0.18 340)" opacity=".8"/>
+          <circle cx="280" cy="215" r="9"  fill="oklch(0.72 0.18 340)" opacity=".85"/>
+          <circle cx="190" cy="280" r="7"  fill="oklch(0.72 0.18 340)" opacity=".75"/>
+        </g>
+        <!-- bacteria: small, bright, clinical green -->
+        <g>
+          <!-- clustered near target cells = co-localization -->
+          <circle cx="162" cy="152" r="2.4" fill="oklch(0.85 0.18 145)"/>
+          <circle cx="165" cy="159" r="2.2" fill="oklch(0.85 0.18 145)"/>
+          <circle cx="156" cy="157" r="2" fill="oklch(0.85 0.18 145)"/>
+          <circle cx="283" cy="218" r="2.5" fill="oklch(0.85 0.18 145)"/>
+          <circle cx="278" cy="209" r="2.2" fill="oklch(0.85 0.18 145)"/>
+          <circle cx="287" cy="212" r="2" fill="oklch(0.85 0.18 145)"/>
+          <circle cx="275" cy="220" r="2.3" fill="oklch(0.85 0.18 145)"/>
+          <circle cx="188" cy="282" r="2.4" fill="oklch(0.85 0.18 145)"/>
+          <circle cx="193" cy="277" r="2" fill="oklch(0.85 0.18 145)"/>
+          <!-- sparse elsewhere -->
+          <circle cx="80"  cy="90"  r="1.8" fill="oklch(0.85 0.18 145)" opacity=".6"/>
+          <circle cx="340" cy="120" r="1.6" fill="oklch(0.85 0.18 145)" opacity=".5"/>
+          <circle cx="60"  cy="260" r="1.8" fill="oklch(0.85 0.18 145)" opacity=".55"/>
+          <circle cx="350" cy="320" r="2" fill="oklch(0.85 0.18 145)" opacity=".6"/>
+          <circle cx="100" cy="340" r="1.6" fill="oklch(0.85 0.18 145)" opacity=".5"/>
+          <circle cx="330" cy="60"  r="1.4" fill="oklch(0.85 0.18 145)" opacity=".45"/>
+        </g>
+        <!-- interaction arcs -->
+        <g stroke="oklch(0.80 0.17 145 / .55)" stroke-width="1" fill="none">
+          <path d="M 160 155 Q 161 154 162 152" />
+          <path d="M 160 155 Q 163 156 165 159" />
+          <path d="M 280 215 Q 281 217 283 218" />
+          <path d="M 280 215 Q 279 212 278 209" />
+          <path d="M 280 215 Q 283 215 287 212" />
+          <path d="M 190 280 Q 189 281 188 282" />
+        </g>
+      </svg>
+    </div>
+    <div class="hero-viz-legend">
+      <span><i style="background:oklch(0.8 0.12 240)"></i>Host epithelial cells</span>
+      <span><i style="background:oklch(0.72 0.18 340)"></i>EC cells (target)</span>
+      <span><i style="background:oklch(0.85 0.18 145)"></i>Bacterial transcripts</span>
+    </div>
+    <div class="hero-viz-scale"><span class="bar"></span>100 µm</div>
+  </div>
+
+  <div class="hero-strip">
+    <div class="cell"><span class="k">Problem</span><span class="v">95<span style="color:var(--fg-mute);">%</span></span><span class="d">of probiotics on market lack clinical evidence of mechanism.</span></div>
+    <div class="cell"><span class="k">Market</span><span class="v"><em>$100</em><span style="color:var(--fg-mute);">B</span></span><span class="d">probiotics industry, 2024 — riding on spatially-blind data.</span></div>
+    <div class="cell"><span class="k">Wedge</span><span class="v">21.2<span style="color:var(--fg-mute);">%</span></span><span class="d">CAGR for psychobiotics, fastest-growing microbiome segment.</span></div>
+    <div class="cell"><span class="k">Competitors in gut-brain spatial</span><span class="v">0</span><span class="d">no one systematically maps microbe-host spatial interactions today.</span></div>
+  </div>
+</header>
+
+<!-- ================= INSIGHT ================= -->
+<section id="insight" data-screen-label="Insight">
+  <div class="section-head">
+    <div>
+      <span class="eyebrow">02 · Our Insight</span>
+      <h2>Location is the <em>signal</em>.</h2>
+    </div>
+    <p class="aside">Sequencing tells you the cast of characters. Spatial omics tells you who is touching whom — and that's where mechanism lives.</p>
+  </div>
+
+  <div class="comparison">
+    <div class="col a">
+      <span class="lbl">Method A · Sequencing</span>
+      <h3>What 16S and metagenomics see.</h3>
+      <p>A roster of species and their abundance — homogenized, stripped of location. The industry's status quo for 20 years.</p>
+      <div class="viz a">
+        <svg viewBox="0 0 400 210" preserveAspectRatio="xMidYMid meet">
+          <g>
+            <!-- Homogenized dots: everything scattered flat -->
+            <circle cx="40"  cy="105" r="5" fill="oklch(0.85 0.18 145)"/>
+            <circle cx="75"  cy="105" r="5" fill="oklch(0.85 0.18 145)"/>
+            <circle cx="110" cy="105" r="5" fill="oklch(0.85 0.18 145)"/>
+            <circle cx="145" cy="105" r="5" fill="oklch(0.72 0.18 340)"/>
+            <circle cx="180" cy="105" r="5" fill="oklch(0.8 0.12 240)"/>
+            <circle cx="215" cy="105" r="5" fill="oklch(0.8 0.12 240)"/>
+            <circle cx="250" cy="105" r="5" fill="oklch(0.85 0.18 145)"/>
+            <circle cx="285" cy="105" r="5" fill="oklch(0.72 0.18 340)"/>
+            <circle cx="320" cy="105" r="5" fill="oklch(0.8 0.12 240)"/>
+            <circle cx="355" cy="105" r="5" fill="oklch(0.85 0.18 145)"/>
+          </g>
+          <text x="200" y="170" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="oklch(0.55 0.008 150)" letter-spacing="1.5">HOMOGENIZED · NO LOCATION</text>
+        </svg>
+      </div>
+    </div>
+    <div class="col b">
+      <span class="lbl">Method B · Spatial Omics + AI</span>
+      <h3>What GutIntel sees.</h3>
+      <p>A spatial map: which strain is co-localized with which neuron, EC cell, or immune cell — at single-cell resolution.</p>
+      <div class="viz b">
+        <svg viewBox="0 0 400 210" preserveAspectRatio="xMidYMid meet">
+          <g stroke="oklch(0.30 0.012 150)" fill="none" stroke-width="1" stroke-dasharray="3 3">
+            <path d="M 50 160 Q 100 60 180 100 T 340 120" />
+          </g>
+          <g>
+            <!-- grouped interactions -->
+            <circle cx="90" cy="130" r="7" fill="oklch(0.72 0.18 340)"/>
+            <circle cx="94" cy="128" r="2.2" fill="oklch(0.85 0.18 145)"/>
+            <circle cx="88" cy="134" r="2" fill="oklch(0.85 0.18 145)"/>
+            <circle cx="92" cy="136" r="1.8" fill="oklch(0.85 0.18 145)"/>
+
+            <circle cx="200" cy="80" r="8" fill="oklch(0.72 0.18 340)"/>
+            <circle cx="204" cy="83" r="2.2" fill="oklch(0.85 0.18 145)"/>
+            <circle cx="198" cy="78" r="1.8" fill="oklch(0.85 0.18 145)"/>
+
+            <circle cx="310" cy="140" r="7" fill="oklch(0.72 0.18 340)"/>
+            <circle cx="313" cy="143" r="2" fill="oklch(0.85 0.18 145)"/>
+            <circle cx="306" cy="137" r="2.2" fill="oklch(0.85 0.18 145)"/>
+
+            <circle cx="150" cy="60" r="4" fill="oklch(0.8 0.12 240)" opacity=".4"/>
+            <circle cx="260" cy="160" r="4" fill="oklch(0.8 0.12 240)" opacity=".4"/>
+            <circle cx="60"  cy="80"  r="3" fill="oklch(0.8 0.12 240)" opacity=".3"/>
+            <circle cx="350" cy="90"  r="3" fill="oklch(0.8 0.12 240)" opacity=".3"/>
+          </g>
+          <text x="200" y="195" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="oklch(0.80 0.17 145)" letter-spacing="1.5">STRAIN × HOST-CELL ADJACENCY</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PLATFORM ================= -->
+<section class="platform-section" id="platform" data-screen-label="Platform">
+  <div class="inner">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">03 · The Platform</span>
+        <h2>Three layers,<br/>one <em>atlas</em>.</h2>
+      </div>
+      <p class="aside">An AI microbiome–host intelligence engine. Wet-lab data feeds our models; our models feed an industry-scale platform.</p>
+    </div>
+
+    <div class="layers">
+      <div class="layer">
+        <span class="idx">LAYER 01 · WET</span>
+        <h3>Spatial data <em>generation</em>.</h3>
+        <span class="tag">In-tissue, single-cell</span>
+        <p>10x Visium, Stereo-seq, and MERFISH applied to gut tissue containing both host cells and bacteria — preserving physical location at single-cell resolution.</p>
+        <div class="layer-art">
+          <span class="chip">10x Visium</span>
+          <span class="chip">Stereo-seq</span>
+          <span class="chip">MERFISH</span>
+          <span class="chip">BacSpot</span>
+        </div>
+      </div>
+      <div class="layer">
+        <span class="idx">LAYER 02 · DRY</span>
+        <h3>AI interaction <em>analysis</em>.</h3>
+        <span class="tag">Proprietary ML</span>
+        <p>Our models identify co-localization patterns, predict mechanistic pathways (strain → EC cell → serotonin), and rank strain–cell affinities across tissue and condition.</p>
+        <div class="layer-art">
+          <span class="chip ac">co-localization</span>
+          <span class="chip">pathway inference</span>
+          <span class="chip">strain ranking</span>
+          <span class="chip">scRNA grounding</span>
+        </div>
+      </div>
+      <div class="layer">
+        <span class="idx">LAYER 03 · PRODUCT</span>
+        <h3>Intelligence <em>platform</em>.</h3>
+        <span class="tag">Subscription atlas</span>
+        <p>A searchable atlas of spatial interactions. API, strain recommendation engine, and data licensing to pharma and probiotic R&amp;D at scale.</p>
+        <div class="layer-art">
+          <span class="chip">Atlas API</span>
+          <span class="chip">strain-rec engine</span>
+          <span class="chip">R&amp;D workflows</span>
+          <span class="chip ac">data licensing</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="platform-callout">
+      <div class="q">Think <em>Tempus for the microbiome</em> — not a sequencing company, an intelligence company.</div>
+      <div class="comp">
+        <span>Comparable · Tempus</span>
+        <b>$316M / yr data licensing</b>
+        <b>126% net revenue retention</b>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= MARKET ================= -->
+<section id="market" data-screen-label="Market">
+  <div class="section-head">
+    <div>
+      <span class="eyebrow">04 · Market</span>
+      <h2>Multiple expanding<br/>markets, <em>converging</em>.</h2>
+    </div>
+    <p class="aside">We sit at the intersection of a $100B consumer category, a $2–5B analytics market, and a $385–711M enabling technology — with a freshly validated regulatory pathway on top.</p>
+  </div>
+
+  <div class="market-grid">
+    <div class="market-viz">
+      <div class="tam-layers">
+        <div class="tam-circle tam-tam">
+          <span class="tk">TAM · Probiotics</span>
+          <span class="tv">$100B</span>
+          <span class="td">8–14% CAGR · supplements, food, animal feed</span>
+        </div>
+        <div class="tam-circle tam-sam">
+          <span class="tk">SAM · B2B Analytics</span>
+          <span class="tv">$5B</span>
+          <span class="td">microbiome analytics &amp; data services</span>
+        </div>
+        <div class="tam-circle tam-som">
+          <span class="tk">SOM · Near-term</span>
+          <span class="tv">$200M</span>
+        </div>
+      </div>
+    </div>
+    <div class="market-facts">
+      <div class="market-fact">
+        <div class="v"><em>$940</em><span style="font-size:24px; color:var(--fg-mute);">M</span></div>
+        <div class="t"><b>Psychobiotics market by 2034.</b> 21.2% CAGR — the fastest-growing segment in microbiome therapeutics. Our entry wedge.</div>
+      </div>
+      <div class="market-fact">
+        <div class="v">$711<span style="font-size:24px; color:var(--fg-mute);">M</span></div>
+        <div class="t"><b>Spatial omics enabling market.</b> 14–18% CAGR. The instrument wave we ride on.</div>
+      </div>
+      <div class="market-fact">
+        <div class="v">$8<span style="font-size:24px; color:var(--fg-mute);">B</span></div>
+        <div class="t"><b>China probiotics.</b> &lt;10% household penetration, zero spatial competitors. Phase-3 geographic expansion.</div>
+      </div>
+      <div class="market-fact">
+        <div class="v"><em>1</em><sup style="font-size:16px; color:var(--fg-mute); font-style:normal;">st</sup></div>
+        <div class="t"><b>Regulatory claim</b> for a psychobiotic product issued to Novonesis in 2024. FDA-validated microbiome therapeutic pathway via Rebyota &amp; VOWST.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= COMPETITION ================= -->
+<section id="competition" data-screen-label="Competition">
+  <div class="section-head">
+    <div>
+      <span class="eyebrow">05 · Competitive Landscape</span>
+      <h2>An <em>unoccupied</em><br/>intersection.</h2>
+    </div>
+    <p class="aside">Plotted against the two axes that matter — data method and domain — the gut-brain spatial cell is empty. That's where we live.</p>
+  </div>
+
+  <div class="matrix">
+    <div class="axis x"></div>
+    <div class="axis y"></div>
+    <div class="ax-tick" style="left: 76px; bottom: 18px;">Sequencing</div>
+    <div class="ax-tick" style="right: 36px; bottom: 18px;">Spatial omics</div>
+    <div class="ax-tick" style="left: 26px; top: 44px;">Microbiome</div>
+    <div class="ax-tick" style="left: 26px; bottom: 46px;">Other domains</div>
+
+    <div class="quad q-tl">
+      <span class="qh">Crowded · no spatial data</span>
+      <span class="qc"><b>Viome</b> · <b>ZOE</b> · <b>Seed</b> · <b>Pendulum</b><br/><b>Vedanta</b> · <b>Seres</b> · <b>Enterome</b></span>
+      <span class="qc" style="margin-top:auto; font-size:11px; color:var(--fg-dim);">Consumer / drug-only · no mechanistic map</span>
+    </div>
+    <div class="quad us q-tr">
+      <span class="qh">Only player</span>
+      <span class="name">GutIntel.</span>
+      <span class="qc"><b>Spatial microbiome intelligence</b> · gut-brain · first of kind</span>
+    </div>
+    <div class="quad q-bl">
+      <span class="qh">Adjacent · wrong data type</span>
+      <span class="qc"><b>Tempus</b> · <b>Foundation Medicine</b><br/><b>Flatiron Health</b> · <b>Owkin</b> · <b>PathAI</b></span>
+      <span class="qc" style="margin-top:auto; font-size:11px; color:var(--fg-dim);">Our business-model comps · oncology genomics</span>
+    </div>
+    <div class="quad q-br">
+      <span class="qh">Adjacent · different focus</span>
+      <span class="qc"><b>Kanvas Biosciences</b> ($29.5M)<br/><b>10x Genomics</b> · <b>Vizgen</b> · <b>BGI/STOmics</b></span>
+      <span class="qc" style="margin-top:auto; font-size:11px; color:var(--fg-dim);">Spatial — but immuno-oncology or tool-vendor</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TRACTION ================= -->
+<section id="traction" data-screen-label="Traction">
+  <div class="section-head">
+    <div>
+      <span class="eyebrow">06 · Traction</span>
+      <h2>Our first customer<br/>supplies <em>1 in 3</em><br/>probiotics globally.</h2>
+    </div>
+    <p class="aside">Through our CTO's direct management-level relationship, IFF is our first pilot — a paid project ($50–200K) that doubles as validation and an onramp to their strain library.</p>
+  </div>
+
+  <div class="traction">
+    <div class="iff-card">
+      <div>
+        <div class="brand-sub">Strategic partner · NYSE: IFF</div>
+        <div class="brand">IFF.</div>
+      </div>
+      <p style="color:var(--fg-mute); font-size:14.5px; max-width:36ch;">
+        International Flavors &amp; Fragrances. Global leader in probiotics, enzymes and cultures. Formerly DuPont Nutrition &amp; Biosciences. HQ Madison, WI.
+      </p>
+      <div class="stat-row">
+        <div class="c"><div class="v"><em>$11</em>B+</div><div class="k">annual revenue</div></div>
+        <div class="c"><div class="v">22k</div><div class="k">employees worldwide</div></div>
+        <div class="c"><div class="v"><em>1 in 3</em></div><div class="k">probiotics globally use IFF materials</div></div>
+        <div class="c"><div class="v">~30%</div><div class="k">H&amp;B segment share of profit</div></div>
+      </div>
+    </div>
+
+    <div class="unlocks">
+      <h3>What this unlocks</h3>
+      <ol>
+        <li><span class="n">01</span><div><b>Revenue.</b> <span>First paid pilot, $50–200K. Commercial validation from the most credible possible counterparty.</span></div></li>
+        <li><span class="n">02</span><div><b>Strain library.</b> <span>IFF supplies the world's most commercially significant probiotic strains — exactly what our atlas needs.</span></div></li>
+        <li><span class="n">03</span><div><b>Industry de-risk.</b> <span>A paid pilot with the world's largest probiotics supplier is the strongest possible market signal.</span></div></li>
+        <li><span class="n">04</span><div><b>Phase-2 onramp.</b> <span>IFF's downstream customers (consumer probiotic brands) are precisely our data-licensing market.</span></div></li>
+      </ol>
+      <div style="margin-top:18px; padding:14px 16px; border-left:2px solid var(--accent); background:var(--accent-soft); border-radius:0 8px 8px 0; font-size:13px; color:var(--fg-mute);">
+        Direct relationship via co-founder · management-level confirmation · <span style="color:var(--accent);">written LOI in progress</span>.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TEAM ================= -->
+<section id="team" data-screen-label="Team">
+  <div class="section-head">
+    <div>
+      <span class="eyebrow">07 · Team</span>
+      <h2>Built to <em>win</em><br/>this market.</h2>
+    </div>
+    <p class="aside">Two founders. Harvard · UPenn · IFF. Both willing to take leave or drop out to pursue GutIntel full-time.</p>
+  </div>
+
+  <div class="team-grid">
+    <div class="founder">
+      <div class="portrait">
+        <span class="initials">CL</span>
+        <span class="cap">portrait · founder photo</span>
+      </div>
+      <div class="body">
+        <span class="role">CEO · Product, Business, AI</span>
+        <h3>Tianhao (Chris) Luo</h3>
+        <div class="affil"><b>Harvard Medical School PhD</b> · Biomedical Informatics<br/>UPenn Wharton triple major · summa cum laude · 3.94 · GRE 340/340</div>
+        <ul>
+          <li>Research: Faisal Mahmood + Pranav Rajpurkar labs (Harvard)</li>
+          <li>Nature Cell Biology publication</li>
+          <li>Co-founded MedPen ($14M+ valuation, SPC incubator)</li>
+          <li>Founded MedJourney · 1st Prize AdventureX hackathon</li>
+          <li>VC Fellow · LiquidMetal · OpenAI MOVE Fellow</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="founder">
+      <div class="portrait b">
+        <span class="initials">RW</span>
+        <span class="cap">portrait · founder photo</span>
+      </div>
+      <div class="body">
+        <span class="role">CTO · Spatial Omics &amp; Bio Data</span>
+        <h3>Ruiming (Ray) Wu</h3>
+        <div class="affil"><b>UPenn PhD</b> · Genomics &amp; Computational Biology<br/>UPenn Bioengineering undergrad</div>
+        <ul>
+          <li>Advisors: Mingyao Li (spatial genomics) + Li Shen (Alzheimer's)</li>
+          <li>Cell2Sentence (ICML submission)</li>
+          <li>Pathology chain-of-thought · Nature BME (major revision)</li>
+          <li>Multimodal biological representation learning</li>
+          <li>Direct IFF relationship at management level</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ROADMAP ================= -->
+<section id="roadmap" data-screen-label="Roadmap">
+  <div class="section-head">
+    <div>
+      <span class="eyebrow">08 · 12-Month Execution</span>
+      <h2>From pilot to <em>platform</em>.</h2>
+    </div>
+    <p class="aside">Pre-seed deploys over twelve months: wet-lab data, first revenue, proprietary atlas, then data-licensing MVP to set up the $3–5M seed.</p>
+  </div>
+
+  <div class="roadmap">
+    <div class="roadmap-rows">
+      <div class="roadmap-row">
+        <div class="q">Q2 · 2026</div>
+        <span class="phase active">In progress</span>
+        <div><div class="t">Foundation.</div><div class="sub">Incorporate in Delaware · Clerky · public AI demo · YC SU26 application · written LOI with IFF</div></div>
+        <div class="milestone">WET READY</div>
+      </div>
+      <div class="roadmap-row">
+        <div class="q">Q3 · 2026</div>
+        <span class="phase next">Next</span>
+        <div><div class="t">First revenue.</div><div class="sub">Execute IFF pilot ($50–200K) · first spatial experiments on probiotic strains in gut tissue · hire first ML engineer</div></div>
+        <div class="milestone">$50–200K · REVENUE</div>
+      </div>
+      <div class="roadmap-row">
+        <div class="q">Q4 · 2026</div>
+        <span class="phase">Planned</span>
+        <div><div class="t">Scale data.</div><div class="sub">Sign 2–3 additional CRO clients · 100+ samples in proprietary atlas · first scientific results · close pre-seed</div></div>
+        <div class="milestone">100 SLIDES · ATLAS</div>
+      </div>
+      <div class="roadmap-row">
+        <div class="q">Q1–2 · 2027</div>
+        <span class="phase">Planned</span>
+        <div><div class="t">Platform launch.</div><div class="sub">Data-licensing MVP · API for enterprise clients · begin BGI/STOmics conversations · seed round ($3–5M)</div></div>
+        <div class="milestone">PHASE 2 · LICENSING</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= LETTERS OF SUPPORT ================= -->
+<section id="sponsors" class="lor-section" data-screen-label="Backed by">
+  <div class="lor-eyebrow-row">
+    <div class="eyebrow">08 · Industry validation</div>
+    <div class="lor-seal" aria-hidden="true">
+      <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <path id="sealCircle" d="M 40,40 m -28,0 a 28,28 0 1,1 56,0 a 28,28 0 1,1 -56,0" fill="none"/>
+        </defs>
+        <circle cx="40" cy="40" r="36" fill="none" stroke="currentColor" stroke-width="0.6" opacity="0.55"/>
+        <circle cx="40" cy="40" r="29" fill="none" stroke="currentColor" stroke-width="0.4" opacity="0.4"/>
+        <text font-family="IBM Plex Mono" font-size="6" letter-spacing="2" fill="currentColor" opacity="0.75">
+          <textPath href="#sealCircle" startOffset="0">PROFESSIONAL · SUPPORT · GUTINTEL · MMXXVI · </textPath>
+        </text>
+        <g transform="translate(40,40)" stroke="currentColor" fill="none" stroke-width="0.7" opacity="0.85">
+          <circle r="9"/>
+          <path d="M -5,-2 L -1,3 L 6,-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <h2 class="lor-h2">
+    Letters of professional support<br/>from the <em>global probiotics industry</em>.
+  </h2>
+
+  <p class="lor-lede">
+    Senior R&amp;D leaders at four of the most consequential companies in microbial health &mdash; across the United States, Denmark, and China &mdash; have reviewed our scientific direction and provided named professional support for GutIntel. Together, they touch the majority of the global probiotic supply chain, from strain manufacture to consumer products.
+  </p>
+
+  <div class="lor-row">
+    <article class="lor">
+      <header class="lor-head">
+        <span class="lor-flag"><span class="lor-flag-emoji">🇺🇸</span><span class="lor-flag-code">US</span></span>
+        <span class="lor-stamp">Signed · Apr 2026</span>
+      </header>
+      <h3 class="lor-brand">Amway</h3>
+      <p class="lor-tag">Nutrilite — world's #1 selling vitamin &amp; dietary supplement brand.</p>
+      <div class="lor-divider" aria-hidden="true"><span></span></div>
+      <div class="lor-attrib">
+        <div class="lor-signer">Johnson Han</div>
+        <div class="lor-title">General Manager<br/>Amway China R&amp;D Center</div>
+      </div>
+    </article>
+
+    <article class="lor">
+      <header class="lor-head">
+        <span class="lor-flag"><span class="lor-flag-emoji">🇺🇸</span><span class="lor-flag-code">US</span></span>
+        <span class="lor-stamp">Signed · Apr 2026</span>
+      </header>
+      <h3 class="lor-brand">IFF</h3>
+      <p class="lor-tag">NYSE: IFF — 1 in 3 probiotics globally use IFF strains.</p>
+      <div class="lor-divider" aria-hidden="true"><span></span></div>
+      <div class="lor-attrib">
+        <div class="lor-signer">Simon Ye, PhD</div>
+        <div class="lor-title">Health R&amp;D Group Manager · Clinical Innovation &amp; Translation Lead, APAC<br/>IFF Health Sciences</div>
+      </div>
+    </article>
+
+    <article class="lor">
+      <header class="lor-head">
+        <span class="lor-flag"><span class="lor-flag-emoji">🇩🇰</span><span class="lor-flag-code">DK</span></span>
+        <span class="lor-stamp">Signed · Apr 2026</span>
+      </header>
+      <h3 class="lor-brand">Novonesis</h3>
+      <p class="lor-tag">Chr. Hansen + Novozymes — global leader in probiotic strains &amp; biosolutions.</p>
+      <div class="lor-divider" aria-hidden="true"><span></span></div>
+      <div class="lor-attrib">
+        <div class="lor-signer">Hongwei Wang, PhD, MD, RD</div>
+        <div class="lor-title">Head of APAC Scientific Support<br/>&amp; Product Development</div>
+      </div>
+    </article>
+
+    <article class="lor">
+      <header class="lor-head">
+        <span class="lor-flag"><span class="lor-flag-emoji">🇨🇳</span><span class="lor-flag-code">CN</span></span>
+        <span class="lor-stamp">Signed · Apr 2026</span>
+      </header>
+      <h3 class="lor-brand">Mengniu</h3>
+      <p class="lor-tag">Top-2 Chinese dairy — leading probiotic-fermented dairy producer.</p>
+      <div class="lor-divider" aria-hidden="true"><span></span></div>
+      <div class="lor-attrib">
+        <div class="lor-signer">Yuejian Mao, PhD</div>
+        <div class="lor-title">R&amp;D General Manager, Microecology<br/>Institute of Nutrition Science, Mengniu Group</div>
+      </div>
+    </article>
+  </div>
+
+  <p class="lor-foot">
+    <span class="lor-foot-mark">§</span>
+    Letters reflect each signer's professional opinion as an industry expert. They are not letters of intent, term sheets, contracts, or commercial commitments by their employers, and do not bind any employer to a future business relationship with GutIntel.
+  </p>
+</section>
+
+<!-- ================= CONTACT ================= -->
+<section class="contact" id="contact" data-screen-label="Contact">
+  <div class="contact-inner">
+    <div>
+      <span class="eyebrow">09 · Open round</span>
+      <div style="height: 18px;"></div>
+      <h2>Raising a <em>$500K–$1M</em> pre-seed.</h2>
+      <p style="color:var(--fg-mute); font-size:16px; margin-top:20px; max-width:36ch; line-height:1.55;">
+        12-month runway. Funds the IFF pilot, first ML engineer, and the proprietary atlas that underwrites the Series Seed.
+      </p>
+      <div style="margin-top: 28px; display: grid; grid-template-columns: repeat(4, auto); gap: 0; border-top: 1px solid var(--line); max-width: 520px;">
+        <div style="padding: 16px 20px 0 0; border-right: 1px solid var(--line-soft);">
+          <div class="mono" style="font-size:10.5px; color:var(--fg-dim); text-transform:uppercase; letter-spacing:.12em;">Wet</div>
+          <div style="font-family:var(--serif); font-size:22px; margin-top:4px;">40%</div>
+        </div>
+        <div style="padding: 16px 20px 0; border-right: 1px solid var(--line-soft);">
+          <div class="mono" style="font-size:10.5px; color:var(--fg-dim); text-transform:uppercase; letter-spacing:.12em;">ML hire</div>
+          <div style="font-family:var(--serif); font-size:22px; margin-top:4px;">25%</div>
+        </div>
+        <div style="padding: 16px 20px 0; border-right: 1px solid var(--line-soft);">
+          <div class="mono" style="font-size:10.5px; color:var(--fg-dim); text-transform:uppercase; letter-spacing:.12em;">Platform</div>
+          <div style="font-family:var(--serif); font-size:22px; margin-top:4px;">20%</div>
+        </div>
+        <div style="padding: 16px 0 0 20px;">
+          <div class="mono" style="font-size:10.5px; color:var(--fg-dim); text-transform:uppercase; letter-spacing:.12em;">Ops · legal</div>
+          <div style="font-family:var(--serif); font-size:22px; margin-top:4px;">15%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-card">
+      <div>
+        <div class="ky">CEO</div>
+        <div style="font-family:var(--serif); font-size:22px; margin-top:2px;">Tianhao (Chris) Luo</div>
+        <div class="em"><a href="/cdn-cgi/l/email-protection#b2c6dbd3dcdad3ddeddec7ddf2dadfc19cdad3c0c4d3c0d69cd7d6c7"><span class="__cf_email__" data-cfemail="bbcfd2dad5d3dad4e4d7ced4fbd3d6c895d3dac9cddac9df95dedfce">[email&#160;protected]</span></a></div>
+      </div>
+      <div class="line">
+        <div class="ky">CTO</div>
+        <div style="font-family:var(--serif); font-size:22px; margin-top:2px;">Ruiming (Ray) Wu</div>
+        <div class="em"><a href="/cdn-cgi/l/email-protection#1d6f68747074737a336a685d6d787373707879747e74737833686d78737333787968"><span class="__cf_email__" data-cfemail="2b595e424642454c055c5e6b5b4e4545464e4f424842454e055e5b4e4545054e4f5e">[email&#160;protected]</span></a></div>
+      </div>
+      <div class="line" style="display:flex; gap:10px;">
+        <a class="btn btn-primary" href="/cdn-cgi/l/email-protection#601409010e08010f3f0c150f20080d134e080112160112044e050415">Request the deck</a>
+        <a class="btn" href="#">Book a call →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-foot">
+  <div>© 2026 GutIntel, Inc. · Pre-seed · Confidential</div>
+  <div class="r">
+    <span>Cambridge · Philadelphia · Madison WI</span>
+    <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="acc4c9c0c0c3eccbd9d8c5c2d8c9c082cec5c3">[email&#160;protected]</a></span>
+  </div>
+</footer>
+
+<!-- ================= Tweaks ================= -->
+<div class="tweaks-panel" id="tweaks-panel" aria-hidden="true">
+  <h4>Tweaks</h4>
+  <div class="tweak-row">
+    <label>Theme</label>
+    <div class="seg" data-seg="theme">
+      <button data-val="dark" aria-pressed="true">Dark</button>
+      <button data-val="light" aria-pressed="false">Light</button>
+    </div>
+  </div>
+  <div class="tweak-row">
+    <label>Accent</label>
+    <div class="swatches" data-seg="accent">
+      <button class="swatch" data-val="clinical-green" aria-pressed="true"  style="background:oklch(0.80 0.17 145)"></button>
+      <button class="swatch" data-val="cobalt"         aria-pressed="false" style="background:oklch(0.66 0.17 255)"></button>
+      <button class="swatch" data-val="magenta"        aria-pressed="false" style="background:oklch(0.68 0.20 340)"></button>
+      <button class="swatch" data-val="amber"          aria-pressed="false" style="background:oklch(0.78 0.16 75)"></button>
+    </div>
+  </div>
+  <div class="tweak-row">
+    <label>Density</label>
+    <div class="seg" data-seg="density">
+      <button data-val="compact"     aria-pressed="false">Compact</button>
+      <button data-val="comfortable" aria-pressed="true">Comfort</button>
+      <button data-val="spacious"    aria-pressed="false">Spacious</button>
+    </div>
+  </div>
+  <div style="font-family:var(--mono); font-size:10.5px; color:var(--fg-dim); border-top:1px solid var(--line-soft); padding-top:10px; margin-top:4px;">
+    Toggle via toolbar ⚙ · persists on reload
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  const body = document.body;
+  const TW = window.TWEAKS;
+  function applyTweaks() {
+    body.setAttribute('data-theme', TW.theme);
+    body.setAttribute('data-accent', TW.accent);
+    body.setAttribute('data-density', TW.density);
+    document.querySelectorAll('[data-seg]').forEach(group => {
+      const key = group.dataset.seg;
+      group.querySelectorAll('button').forEach(b => {
+        b.setAttribute('aria-pressed', b.dataset.val === TW[key] ? 'true' : 'false');
+      });
+    });
+  }
+  applyTweaks();
+  document.querySelectorAll('[data-seg]').forEach(group => {
+    const key = group.dataset.seg;
+    group.querySelectorAll('button').forEach(b => {
+      b.addEventListener('click', () => {
+        TW[key] = b.dataset.val;
+        applyTweaks();
+        window.parent?.postMessage({type: '__edit_mode_set_keys', edits: { [key]: b.dataset.val }}, '*');
+      });
+    });
+  });
+
+  // edit-mode listener first, then announce
+  const panel = document.getElementById('tweaks-panel');
+  window.addEventListener('message', (e) => {
+    const d = e.data || {};
+    if (d.type === '__activate_edit_mode') { panel.classList.add('open'); panel.setAttribute('aria-hidden', 'false'); }
+    else if (d.type === '__deactivate_edit_mode') { panel.classList.remove('open'); panel.setAttribute('aria-hidden', 'true'); }
+  });
+  window.parent?.postMessage({type: '__edit_mode_available'}, '*');
+
+  // smooth-scroll anchors
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', (e) => {
+      const id = a.getAttribute('href').slice(1);
+      if (!id) return;
+      const el = document.getElementById(id);
+      if (el) { e.preventDefault(); el.scrollIntoView({behavior:'smooth', block:'start'}); }
+    });
+  });
+</script>
+</body>
+</html>
